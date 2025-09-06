@@ -215,30 +215,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Virtual environments
 venv/
-.env
-.DS_Store
-*.sqlite3
-*.pyc
-instance/
-.pytest_cache/
-.coverage
-htmlcov/
-migrations/
-*.log
-celerybeat-schedule
-*.pot
-*.mo
-*.sqlite3-journal
-*.egg-info/
-*.egg
-.envrc
-__pycache__/
-.pyre/
-.pytype/
-.ipynb_checkpoints
-.vscode/
-.idea/
-*.rdb
-*.aof
-*.pid
+
+# Git ignore itself
+.gitignore
