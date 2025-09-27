@@ -1,31 +1,82 @@
 {% extends "booking_app/base.html" %}
 {% block title %}Кімната {{ room.number }}{% endblock %}
 {% block content %}
-<h1>Кімната №{{ room.number }}</h1>
-<p>Категорія: <b>{{ room.category.name }}</b></p>
-<p>Місткість: {{ room.category.capacity }} ос.</p>
-<p>Ціна за ніч: {{ room.category.price_per_night }} ₴</p>
-<p>Статус: {% if room.is_active %}Доступна{% else %}Вимкнено{% endif %}</p>
-
-<hr>
-<h3>Забронювати</h3>
-{% if request.user.is_authenticated %}
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn" type="submit">Забронювати</button>
-  </form>
-{% else %}
-  <p>Щоб бронювати, <a class="btn" href="/admin/login/?next={{ request.path }}">увійдіть</a>.</p>
-{% endif %}
-
-<hr>
-<h3>Останні бронювання цієї кімнати</h3>
-<ul>
-  {% for b in last_bookings %}
-    <li>{{ b.check_in }} → {{ b.check_out }} • {{ b.user.username }} • {{ b.get_status_display }}</li>
-  {% empty %}
-    <li>Поки немає.</li>
-  {% endfor %}
-</ul>
+<div class="container my-4">
+  <h1 class="mb-4">Кімната №{{ room.number }}</h1>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <p><strong>Категорія:</strong> {{ room.category.name }}</p>
+      <p><strong>Місткість:</strong> {{ room.category.capacity }} ос.</p>
+      <p><strong>Ціна за ніч:</strong> {{ room.category.price_per_night }} ₴</p>
+      <p>
+        <strong>Статус:</strong>
+        {% if room.is_active %}
+          <span class="badge bg-success">Доступна</span>
+        {% else %}
+          <span class="badge bg-secondary">Вимкнено</span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h3 class="h5 mb-3">Забронювати</h3>
+      {% if request.user.is_authenticated %}
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.as_p }}
+          </div>
+          <button class="btn btn-primary" type="submit">Забронювати</button>
+        </form>
+      {% else %}
+        <p>
+          Щоб бронювати,
+          <a class="btn btn-outline-primary btn-sm" href="/admin/login/?next={{ request.path }}">
+            Увійдіть
+          </a>.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="h5 mb-3">Останні бронювання цієї кімнати</h3>
+      {% if last_bookings %}
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Дати</th>
+                <th>Користувач</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in last_bookings %}
+                <tr>
+                  <td>{{ b.check_in }} → {{ b.check_out }}</td>
+                  <td>{{ b.user.username }}</td>
+                  <td>
+                    {% if b.status == 'canceled' %}
+                      <span class="badge bg-danger">{{ b.get_status_display }}</span>
+                    {% elif b.status == 'confirmed' %}
+                      <span class="badge bg-success">{{ b.get_status_display }}</span>
+                    {% elif b.status == 'pending' %}
+                      <span class="badge bg-warning text-dark">{{ b.get_status_display }}</span>
+                    {% else %}
+                      <span class="badge bg-secondary">{{ b.get_status_display }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted">Поки немає.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}
