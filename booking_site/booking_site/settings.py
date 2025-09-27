@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'booking_app',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +124,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#login
+
+LOGIN_REDIRECT_URL = "booking_app:room_list"
+LOGOUT_REDIRECT_URL ="booking_app:room_list"
+
+LOGIN_URL = "booking_app:login"

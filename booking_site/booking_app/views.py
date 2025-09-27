@@ -4,6 +4,9 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, Validat
 from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse 
+from django.utils import timezone
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 from .forms import BookingForm
 from .models import Booking, BookingStatus, Room, RoomCategory
@@ -51,7 +54,7 @@ def room_detail(request, pk):
         form = BookingForm()
     
     last_bookings = (
-        room.bookings.select_related("user").order_by("-created_at")[:5]    
+        room.bookings.select_related("user").order_by("-created_at")[:5]     # type: ignore
         )
     ctx = {
         "room": room,
@@ -77,3 +80,15 @@ def booking_cancel(request, pk: int):
         booking.save()
         messages.info(request, "Booking canceled.")
     return redirect(reverse("booking_app:my_bookings"))
+
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful.")
+            return redirect(reverse("booking_app:room_list"))
+    else:
+        form = UserCreationForm()
+    return render(request, "booking_app/auth/register.html", {"form": form}) 
